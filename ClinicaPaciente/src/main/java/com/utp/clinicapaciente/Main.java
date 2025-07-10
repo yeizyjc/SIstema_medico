@@ -105,11 +105,16 @@ if (!id.matches("[a-zA-Z0-9]+")) {
         String nacimiento = scanner.nextLine();
         
         System.out.print("Sexo (M/F): ");
+        
         String sexo = scanner.nextLine();
-        
-        System.out.print("Contraseña: ");
-        String password = scanner.nextLine();
-        
+        System.out.print("Contraseña (solo letras y números, debe contener al menos un número): ");
+String password = scanner.nextLine();
+
+// Validación de contraseña
+if (!password.matches("(?=.*\\d)[a-zA-Z0-9]+")) {
+    System.out.println(" La contraseña debe contener solo letras y números, y al menos un número");
+    return;
+}     
         try (PrintWriter pw = new PrintWriter(new FileWriter(CLIENTES_FILE, true))) {
             pw.println(id + "|" + nombre + "|" + apellidos + "|" + nacimiento + "|" + sexo + "|" + password + "||");
             System.out.println("✅ Cuenta creada correctamente");
