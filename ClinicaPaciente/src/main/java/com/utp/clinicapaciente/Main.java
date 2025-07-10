@@ -81,9 +81,14 @@ public class Main {
     private static void crearCuenta() {
         System.out.println("\n=== CREAR CUENTA ===");
         
-        System.out.print("Ingrese un ID único: ");
-        String id = scanner.nextLine();
-        
+        System.out.print("Ingrese un ID único (solo letras y números): ");
+String id = scanner.nextLine();
+
+// Validar formato del ID
+if (!id.matches("[a-zA-Z0-9]+")) {
+    System.out.println("❌ El ID solo puede contener letras y números (sin espacios, puntos ni símbolos)");
+    return;
+}      
         // Verificar que el ID no exista
         if (existePaciente(id)) {
             System.out.println("❌ Ya existe un paciente con ese ID");
@@ -194,9 +199,43 @@ public class Main {
         System.out.print("Fecha de la cita (DD/MM/YYYY): ");
         String fecha = scanner.nextLine();
         
-        System.out.print("Hora de la cita (HH:MM): ");
-        String hora = scanner.nextLine();
-        
+// Lista de horarios válidos (puedes modificar o agregar más)
+String[] horariosDisponibles = {
+    "08:00", "09:00", "10:00", "11:00",
+    "14:00", "15:00", "16:00"
+};
+
+// Mostrar horarios no ocupados
+System.out.println("Horarios disponibles:");
+boolean hayHorarios = false;
+for (String h : horariosDisponibles) {
+    if (!citaOcupada(fecha, h, idMedico)) {
+        System.out.println("- " + h);
+        hayHorarios = true;
+    }
+}
+
+if (!hayHorarios) {
+    System.out.println("❌ No hay horarios disponibles para este médico ese día");
+    return;
+}
+
+System.out.print("Seleccione una hora de las mostradas: ");
+String hora = scanner.nextLine();
+
+// Validar que esté en la lista y no esté ocupada
+boolean esValido = false;
+for (String h : horariosDisponibles) {
+    if (h.equals(hora) && !citaOcupada(fecha, hora, idMedico)) {
+        esValido = true;
+        break;
+    }
+}
+
+if (!esValido) {
+    System.out.println("❌ Hora inválida o ya ocupada");
+    return;
+}        
         // Verificar disponibilidad
         if (citaOcupada(fecha, hora, idMedico)) {
             System.out.println("❌ Ya existe una cita para ese médico en esa fecha y hora");
