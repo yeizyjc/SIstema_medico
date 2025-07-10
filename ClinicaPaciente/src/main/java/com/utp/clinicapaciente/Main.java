@@ -81,111 +81,91 @@ public class Main {
     private static void crearCuenta() {
         System.out.println("\n=== CREAR CUENTA ===");
         
-        System.out.print("Ingrese un ID único (solo letras y números): ");
-String id = scanner.nextLine();
+String id = "";
+boolean idValido = false;
 
-// Validar formato del ID
-if (!id.matches("[a-zA-Z0-9]+")) {
-    System.out.println("❌ El ID solo puede contener letras y números (sin espacios, puntos ni símbolos)");
-    return;
-}      
-        // Verificar que el ID no exista
-        if (existePaciente(id)) {
-            System.out.println("❌ Ya existe un paciente con ese ID");
-            return;
-        }
+while (!idValido) {
+    System.out.print("Ingrese un ID único (solo letras y números): ");
+    id = scanner.nextLine().trim();
+
+    if (!id.matches("[a-zA-Z0-9]+")) {
+        System.out.println("❌ El ID solo puede contener letras y números (sin espacios, puntos ni símbolos). Intente nuevamente.");
+    } else if (existePaciente(id)) {
+        System.out.println("❌ Ya existe un paciente con ese ID. Intente con otro.");
+    } else {
+        idValido = true;
+    }
+}
     String nombre = "";
 boolean nombreValido = false;
 
 while (!nombreValido) {
-    System.out.print("Nombre: ");
-    nombre = scanner.nextLine();
+    System.out.print("Nombre (solo letras, 2 a 10 caracteres): ");
+    nombre = scanner.nextLine().trim();
 
-    if (nombre.length() > 10) {
-        System.out.println("❌ El nombre debe tener máximo 10 letras.");
+    if (!nombre.matches("[a-zA-Z]{2,10}")) {
+        System.out.println("❌ Nombre inválido. Debe contener solo letras y tener entre 2 y 10 caracteres.");
+    } else {
+        nombreValido = true;
+    }
+}
+        
+      String apellidos = "";
+boolean apellidosValidos = false;
+
+while (!apellidosValidos) {
+    System.out.print("Apellidos (2 palabras, solo letras, cada una de 2 a 10 caracteres): ");
+    apellidos = scanner.nextLine().trim();
+
+    String[] partes = apellidos.split(" ");
+    if (partes.length != 2) {
+        System.out.println("❌ Debe ingresar exactamente 2 apellidos separados por un espacio.");
         continue;
     }
 
-    boolean soloLetras = true;
-    for (int i = 0; i < nombre.length(); i++) {
-        char c = nombre.charAt(i);
-        if (!Character.isLetter(c)) {
-            soloLetras = false;
+    boolean todosValidos = true;
+    for (String parte : partes) {
+        if (!parte.matches("[a-zA-Z]{2,10}")) {
+            todosValidos = false;
             break;
         }
     }
 
-    if (!soloLetras) {
-        System.out.println("❌ El nombre solo debe contener letras.");
+    if (todosValidos) {
+        apellidosValidos = true;
     } else {
-        nombreValido = true; // Todo bien
-    }
-}        
-       String apellidos = "";
-boolean apellidosValidos = false;
-
-while (!apellidosValidos) {
-    System.out.print("Apellidos (2 palabras, solo letras, 2-10 letras cada uno): ");
-    apellidos = scanner.nextLine().trim();
-
-    String[] partes = apellidos.split(" ");
-    if (partes.length == 2) {
-        boolean ambasValidas = true;
-
-        for (String parte : partes) {
-            if (!parte.matches("[a-zA-Z]+") || parte.length() < 2 || parte.length() > 10) {
-                ambasValidas = false;
-                break;
-            }
-        }
-
-        if (ambasValidas) {
-            apellidosValidos = true;
-        } else {
-            System.out.println("❌ Cada apellido debe tener solo letras y entre 2 y 10 caracteres.");
-        }
-    } else {
-        System.out.println("❌ Debe ingresar exactamente 2 apellidos separados por espacio.");
+        System.out.println("❌ Cada apellido debe tener solo letras y entre 2 y 10 caracteres.");
     }
 }
-        
+ 
         String nacimiento = "";
 boolean fechaValida = false;
 
 while (!fechaValida) {
     System.out.print("Fecha de nacimiento (DD/MM/YYYY): ");
-    nacimiento = scanner.nextLine();
+    nacimiento = scanner.nextLine().trim();
 
-    if (nacimiento.length() != 10 || nacimiento.charAt(2) != '/' || nacimiento.charAt(5) != '/') {
-        System.out.println("❌ Formato incorrecto. Use DD/MM/YYYY.");
+    if (!nacimiento.matches("\\d{2}/\\d{2}/\\d{4}")) {
+        System.out.println("❌ Formato inválido. Use DD/MM/YYYY.");
         continue;
     }
 
     try {
-        int dia = Integer.parseInt(nacimiento.substring(0, 2));
-        int mes = Integer.parseInt(nacimiento.substring(3, 5));
-        int anio = Integer.parseInt(nacimiento.substring(6, 10));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        LocalDateTime fechaNacimiento = LocalDateTime.parse(nacimiento + " 00:00", DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+        LocalDateTime hoy = LocalDateTime.now();
+        int edad = hoy.getYear() - fechaNacimiento.getYear();
+        if (fechaNacimiento.plusYears(edad).isAfter(hoy)) edad--;
 
-        if (dia < 1 || dia > 31 || mes < 1 || mes > 12) {
-            System.out.println("❌ Día o mes inválido.");
-            continue;
-        }
-
-        int anioActual = java.time.LocalDate.now().getYear();
-        int edad = anioActual - anio;
-
-        if (edad < 0 || edad > 110) {
+        if (edad >= 0 && edad <= 110) {
+            fechaValida = true;
+        } else {
             System.out.println("❌ Edad no válida. Debe tener entre 0 y 110 años.");
-            continue;
         }
-
-        fechaValida = true; // todo está bien
-
-    } catch (NumberFormatException e) {
-        System.out.println("❌ Fecha inválida, solo números.");
+    } catch (Exception e) {
+        System.out.println("❌ Fecha inválida.");
     }
 }
-
         String sexo = "";
 boolean sexoValido = false;
 
@@ -196,21 +176,38 @@ while (!sexoValido) {
     if (sexo.equals("M") || sexo.equals("F")) {
         sexoValido = true;
     } else {
-        System.out.println("❌ Solo se permite ingresar 'M' o 'F'. Intente nuevamente.");
+        System.out.println("❌ Ingrese solo 'M' o 'F'.");
     }
-}
-        
-        String password;
+}  
+       String password;
 while (true) {
-    System.out.print("Contraseña (6-10 caracteres, letras y números, mínimo un número): ");
+    System.out.print("Contraseña (6-10 caracteres, solo letras y números, al menos 1 número): ");
     password = scanner.nextLine();
 
-    // Validar que tenga entre 6 y 10 caracteres y contenga letras y al menos un número
-    if (password.matches("^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{6,10}$")) {
-        break; // Contraseña válida
-    } else {
-        System.out.println("❌ Contraseña inválida. Debe tener entre 6 y 10 caracteres, incluir letras y al menos un número, sin símbolos.");
+    // Verificar longitud
+    if (password.length() < 6 || password.length() > 10) {
+        System.out.println("❌ La contraseña debe tener entre 6 y 10 caracteres.");
+        continue;
     }
+    // Verificar solo letras y números
+    if (!password.matches("[a-zA-Z0-9]+")) {
+        System.out.println("❌ La contraseña solo debe contener letras y números (sin espacios ni símbolos).");
+        continue;
+    }
+    // Verificar al menos un número
+    boolean tieneNumero = false;
+    for (char c : password.toCharArray()) {
+        if (Character.isDigit(c)) {
+            tieneNumero = true;
+            break;
+        }
+    }
+    if (!tieneNumero) {
+        System.out.println("❌ La contraseña debe contener al menos un número.");
+        continue;
+    }
+    // Si pasa todas las validaciones, salir del bucle
+    break;
 }
         try (PrintWriter pw = new PrintWriter(new FileWriter(CLIENTES_FILE, true))) {
             pw.println(id + "|" + nombre + "|" + apellidos + "|" + nacimiento + "|" + sexo + "|" + password + "||");
@@ -220,7 +217,6 @@ while (true) {
             System.out.println("Error al crear cuenta: " + e.getMessage());
         }
     }
-    
     private static void mostrarMenuPrincipal() {
         int opcion;
         do {
