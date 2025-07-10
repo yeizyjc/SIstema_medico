@@ -186,11 +186,20 @@ while (!fechaValida) {
     }
 }
 
-        
-        System.out.print("Sexo (M/F): ");
-        
-        String sexo = scanner.nextLine();
+        String sexo = "";
+boolean sexoValido = false;
 
+while (!sexoValido) {
+    System.out.print("Sexo (M/F): ");
+    sexo = scanner.nextLine().trim().toUpperCase();
+
+    if (sexo.equals("M") || sexo.equals("F")) {
+        sexoValido = true;
+    } else {
+        System.out.println("❌ Solo se permite ingresar 'M' o 'F'. Intente nuevamente.");
+    }
+}
+        
         String password;
 while (true) {
     System.out.print("Contraseña (6-10 caracteres, letras y números, mínimo un número): ");
