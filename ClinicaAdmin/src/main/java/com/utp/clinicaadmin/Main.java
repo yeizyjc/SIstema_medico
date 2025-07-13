@@ -8,8 +8,8 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    private static final String BASE_PATH = "../BaseDeDatos/";
-    private static final String MEDICOS_FILE =  BASE_PATH + "medicos.txt";
+    private static final String BASE_PATH = "BaseDeDatos/";
+    private static final String MEDICOS_FILE = BASE_PATH + "medicos.txt";
     private static final String CLIENTES_FILE = BASE_PATH + "clientes.txt";
     private static Scanner scanner = new Scanner(System.in);
     
@@ -26,19 +26,23 @@ public class Main {
     
     private static void crearArchivosIniciales() {
         try {
+            // Crear carpeta BaseDeDatos si no existe
+            File baseDir = new File(BASE_PATH);
+            if (!baseDir.exists()) {
+                baseDir.mkdirs();
+            }
             // Crear archivos vacíos si no existen
             File[] archivos = {
                 new File(MEDICOS_FILE),
                 new File(CLIENTES_FILE),
-                new File("citas.txt"),
-                new File("historial.txt"),
-                new File("recetas.txt")
+                new File(BASE_PATH + "citas.txt"),
+                new File(BASE_PATH + "historial.txt"),
+                new File(BASE_PATH + "recetas.txt")
             };
-            
             for (File archivo : archivos) {
                 if (!archivo.exists()) {
                     archivo.createNewFile();
-                    System.out.println("Archivo creado: " + archivo.getName());
+                    System.out.println("Archivo creado: " + archivo.getAbsolutePath());
                 }
             }
         } catch (IOException e) {
@@ -61,7 +65,8 @@ public class Main {
         }
     }
     
-    private static void mostrarMenuPrincipal() {
+    private static void
+    mostrarMenuPrincipal() {
         int opcion;
         do {
             System.out.println("\n=== MENÚ PRINCIPAL ===");
@@ -126,6 +131,8 @@ public class Main {
     
     private static void listarMedicos() {
         System.out.println("\n=== LISTA DE MÉDICOS ===");
+        System.out.println("\n MEDICOS_FILE ===" + MEDICOS_FILE);
+
         try (BufferedReader br = new BufferedReader(new FileReader(MEDICOS_FILE))) {
             String linea;
             boolean hayMedicos = false;
