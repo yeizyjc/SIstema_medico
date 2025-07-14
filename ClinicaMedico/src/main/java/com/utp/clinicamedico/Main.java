@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
-    private static final String BASE_PATH = "BaseDeDatos/";
+    private static final String BASE_PATH = "../BaseDeDatos/";
     private static final String MEDICOS_FILE = BASE_PATH + "medicos.txt";
     private static final String CITAS_FILE = BASE_PATH + "citas.txt";
     private static final String HISTORIAL_FILE = BASE_PATH + "historial.txt";

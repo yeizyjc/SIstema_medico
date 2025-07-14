@@ -8,7 +8,7 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    private static final String BASE_PATH = "BaseDeDatos/";
+    private static final String BASE_PATH = "../BaseDeDatos/";
     private static final String MEDICOS_FILE = BASE_PATH + "medicos.txt";
     private static final String CLIENTES_FILE = BASE_PATH + "clientes.txt";
     private static Scanner scanner = new Scanner(System.in);
